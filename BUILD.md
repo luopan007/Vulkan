@@ -20,6 +20,11 @@ Use the provided CMakeLists.txt with [CMake](https://cmake.org) to generate a bu
 cmake -G "Visual Studio 16 2019" -A x64
 ```
 
+```bat
+mkdir build
+cmake -G "MinGW Makefiles" .. // 命令行+VScode 打开
+```
+
 ### <img src="./images/linuxlogo.png" alt="" height="32px"> Linux
 
 Use the provided CMakeLists.txt with [CMake](https://cmake.org) to generate a build configuration for your favorite IDE or compiler.
