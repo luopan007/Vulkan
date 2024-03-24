@@ -2094,17 +2094,17 @@ typedef enum VkSamplerMipmapMode {
 } VkSamplerMipmapMode;
 
 typedef enum VkDescriptorType {
-    VK_DESCRIPTOR_TYPE_SAMPLER = 0,
-    VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER = 1,
-    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE = 2,
-    VK_DESCRIPTOR_TYPE_STORAGE_IMAGE = 3,
-    VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER = 4,
-    VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER = 5,
-    VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER = 6,
-    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER = 7,
-    VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC = 8,
-    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC = 9,
-    VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT = 10,
+    VK_DESCRIPTOR_TYPE_SAMPLER = 0, // 与一个sampler对象关联的descriptor类型，用于控制在一个sampled image(被采样图像)上的sampling operations(采样操作)的行为
+    VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER = 1, // 是一个单独的描述符类型，它会同时关联一个sampler和一个image resource，并把它们组合成为一个单独的descriptor
+    VK_DESCRIPTOR_TYPE_SAMPLED_IMAGE = 2, // 通过一个image view关联一个image resource(图像资源)，可以在该image view上执行sampling operations(采样操作)
+    VK_DESCRIPTOR_TYPE_STORAGE_IMAGE = 3, // 通过一个image view与一个图像资源关联，load，store，以及atomic操作都可以在该image view上进行
+    VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER = 4, // 通过一个buffer view，与一个buffer resource所关联。image sampling operations(图像采样操作)，将可以执行在该buffer view之上
+    VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER = 5, // 通过一个buffer view与一个buffer resource关联。在该buffer view上，将可以执行对图像的load，store和atomic操作
+    VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER = 6, // 它与一个buffer resource直接关联，在shader中被描述为一个结构体，可以在其多个成员上执行load
+    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER = 7, // 它与一个buffer resource关联，在shader中被描述为一个结构体，可以在其多个成员上执行load，store和atomic操作
+    VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC = 8, // 与 VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER 几乎一样，区别在于如何指定 buffer 的 offset
+    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC = 9, // 与 VK_DESCRIPTOR_TYPE_STORAGE_BUFFER 几乎一样，区别在于如何指定 buffer 的 offset
+    VK_DESCRIPTOR_TYPE_INPUT_ATTACHMENT = 10, // 它会通过一个image view关联一个图像资源，该image view可以在fragment shader中用于framebuffer local load操作
     VK_DESCRIPTOR_TYPE_INLINE_UNIFORM_BLOCK = 1000138000,
     VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_KHR = 1000150000,
     VK_DESCRIPTOR_TYPE_ACCELERATION_STRUCTURE_NV = 1000165000,
@@ -2148,8 +2148,8 @@ typedef enum VkPipelineBindPoint {
 } VkPipelineBindPoint;
 
 typedef enum VkCommandBufferLevel {
-    VK_COMMAND_BUFFER_LEVEL_PRIMARY = 0,
-    VK_COMMAND_BUFFER_LEVEL_SECONDARY = 1,
+    VK_COMMAND_BUFFER_LEVEL_PRIMARY = 0, // 指定一个Primary Command Buffer
+    VK_COMMAND_BUFFER_LEVEL_SECONDARY = 1, // 指定一个Secondary Command Buffer
     VK_COMMAND_BUFFER_LEVEL_MAX_ENUM = 0x7FFFFFFF
 } VkCommandBufferLevel;
 
@@ -2361,12 +2361,12 @@ typedef enum VkMemoryHeapFlagBits {
 typedef VkFlags VkMemoryHeapFlags;
 
 typedef enum VkMemoryPropertyFlagBits {
-    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001,
-    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002,
-    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,
-    VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,
-    VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010,
-    VK_MEMORY_PROPERTY_PROTECTED_BIT = 0x00000020,
+    VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT = 0x00000001, // 使用 Local Device（GPU显卡）的内存，一般就是显存
+    VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT = 0x00000002, // 能够被 Host（CPU）访问，可以使用 vkMapMemory 映射后供 Host 端使用
+    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT = 0x00000004,// Host 端使用Cache Conherant，不需要Host通过 vkFlushMappedMemoryRanges（CPU写，GPU读）和vkInvalidateMappedMemoryRanges（GPU写，CPU读）来分别Flush Cache
+    VK_MEMORY_PROPERTY_HOST_CACHED_BIT = 0x00000008,  // Host 端含有缓存，Host端访问此内存比 UnCache 要快。Host端UnCache内存总是Coherent
+    VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT = 0x00000010, // 表示仅允许设备访问的内存，字面意思时延迟分配
+    VK_MEMORY_PROPERTY_PROTECTED_BIT = 0x00000020,    // 表示只能运行设备访问
     VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD = 0x00000040,
     VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD = 0x00000080,
     VK_MEMORY_PROPERTY_RDMA_CAPABLE_BIT_NV = 0x00000100,
@@ -2511,14 +2511,14 @@ typedef enum VkBufferCreateFlagBits {
 typedef VkFlags VkBufferCreateFlags;
 
 typedef enum VkBufferUsageFlagBits {
-    VK_BUFFER_USAGE_TRANSFER_SRC_BIT = 0x00000001,
-    VK_BUFFER_USAGE_TRANSFER_DST_BIT = 0x00000002,
-    VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000004,
-    VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT = 0x00000008,
-    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT = 0x00000010,
-    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT = 0x00000020,
-    VK_BUFFER_USAGE_INDEX_BUFFER_BIT = 0x00000040,
-    VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = 0x00000080,
+    VK_BUFFER_USAGE_TRANSFER_SRC_BIT = 0x00000001, // 缓冲可以被用作内存传输操作的数据来源
+    VK_BUFFER_USAGE_TRANSFER_DST_BIT = 0x00000002, // 缓冲可以被用作内存传输操作的目的缓冲
+    VK_BUFFER_USAGE_UNIFORM_TEXEL_BUFFER_BIT = 0x00000004, // specifies that the buffer can be used to create a VkBufferView suitable for occupying a VkDescriptorSet slot of type VK_DESCRIPTOR_TYPE_UNIFORM_TEXEL_BUFFER
+    VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT = 0x00000008, // specifies that the buffer can be used to create a VkBufferView suitable for occupying a VkDescriptorSet slot of type VK_DESCRIPTOR_TYPE_STORAGE_TEXEL_BUFFER.
+    VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT = 0x00000010, // specifies that the buffer can be used in a VkDescriptorBufferInfo suitable for occupying a VkDescriptorSet slot either of type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER or VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC.
+    VK_BUFFER_USAGE_STORAGE_BUFFER_BIT = 0x00000020, // specifies that the buffer can be used in a VkDescriptorBufferInfo suitable for occupying a VkDescriptorSet slot either of type VK_DESCRIPTOR_TYPE_STORAGE_BUFFER or VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC.
+    VK_BUFFER_USAGE_INDEX_BUFFER_BIT = 0x00000040, // specifies that the buffer is suitable for passing as the buffer parameter to vkCmdBindIndexBuffer2KHR and vkCmdBindIndexBuffer.
+    VK_BUFFER_USAGE_VERTEX_BUFFER_BIT = 0x00000080, // specifies that the buffer is suitable for passing as an element of the pBuffers array to vkCmdBindVertexBuffers.
     VK_BUFFER_USAGE_INDIRECT_BUFFER_BIT = 0x00000100,
     VK_BUFFER_USAGE_SHADER_DEVICE_ADDRESS_BIT = 0x00020000,
     VK_BUFFER_USAGE_VIDEO_DECODE_SRC_BIT_KHR = 0x00002000,
@@ -2534,8 +2534,8 @@ typedef enum VkBufferUsageFlagBits {
     VK_BUFFER_USAGE_SHADER_BINDING_TABLE_BIT_KHR = 0x00000400,
     VK_BUFFER_USAGE_VIDEO_ENCODE_DST_BIT_KHR = 0x00008000,
     VK_BUFFER_USAGE_VIDEO_ENCODE_SRC_BIT_KHR = 0x00010000,
-    VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT = 0x00200000,
-    VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT = 0x00400000,
+    VK_BUFFER_USAGE_SAMPLER_DESCRIPTOR_BUFFER_BIT_EXT = 0x00200000, // pecifies that the buffer is suitable to contain sampler and combined image sampler descriptors when bound as a descriptor buffer. Buffers containing combined image sampler descriptors must also specify VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT.
+    VK_BUFFER_USAGE_RESOURCE_DESCRIPTOR_BUFFER_BIT_EXT = 0x00400000, // specifies that the buffer is suitable to contain resource descriptors when bound as a descriptor buffer.
     VK_BUFFER_USAGE_PUSH_DESCRIPTORS_DESCRIPTOR_BUFFER_BIT_EXT = 0x04000000,
     VK_BUFFER_USAGE_MICROMAP_BUILD_INPUT_READ_ONLY_BIT_EXT = 0x00800000,
     VK_BUFFER_USAGE_MICROMAP_STORAGE_BIT_EXT = 0x01000000,

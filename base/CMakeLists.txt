@@ -11,8 +11,8 @@ set(KTX_SOURCES
     ${KTX_DIR}/lib/filestream.c)
 
 add_library(base STATIC ${BASE_SRC} ${KTX_SOURCES})
-if(WIN32)
+IF(WIN32)
     target_link_libraries(base ${Vulkan_LIBRARY} ${WINLIBS})
- else(WIN32)
+ELSE(WIN32)
     target_link_libraries(base ${Vulkan_LIBRARY} ${XCB_LIBRARIES} ${WAYLAND_CLIENT_LIBRARIES} ${CMAKE_THREAD_LIBS_INIT})
-endif(WIN32)
+ENDIF(WIN32)

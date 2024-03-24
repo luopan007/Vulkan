@@ -32,29 +32,38 @@
 
 namespace vks
 {
-	namespace debug
-	{
-		// Default debug callback
-		VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessageCallback(
-			VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
-			VkDebugUtilsMessageTypeFlagsEXT messageType,
-			const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
-			void* pUserData);
+    namespace debug
+    {
+        // Default debug callback
+        /*
+         * @brief messageSeverity : 定了消息的严重性，这是一个枚举类型，可以进行比较运算
+         *
+         * @brief messageType : 定义消息类型，违反标准或者有损性能
+         *
+         * @brief pCallbackData : 包含了消息本身的一些细节
+         *
+         * @brief pUserData : 一个在回调配置期间指定的指针，它允许你传递自己的数据
+         */
+        VKAPI_ATTR VkBool32 VKAPI_CALL debugUtilsMessageCallback(
+            VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity,
+            VkDebugUtilsMessageTypeFlagsEXT messageType,
+            const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData,
+            void* pUserData);
 
-		// Load debug function pointers and set debug callback
-		void setupDebugging(VkInstance instance);
-		// Clear debug callback
-		void freeDebugCallback(VkInstance instance);
-		// Used to populate a VkDebugUtilsMessengerCreateInfoEXT with our example messenger function and desired flags
-		void setupDebugingMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& debugUtilsMessengerCI);
-	}
+        // Load debug function pointers and set debug callback
+        void setupDebugging(VkInstance instance);
+        // Clear debug callback
+        void freeDebugCallback(VkInstance instance);
+        // Used to populate a VkDebugUtilsMessengerCreateInfoEXT with our example messenger function and desired flags
+        void setupDebugingMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& debugUtilsMessengerCI);
+    } // end namespace debug
 
-	// Wrapper for the VK_EXT_debug_utils extension
-	// These can be used to name Vulkan objects for debugging tools like RenderDoc
-	namespace debugutils
-	{
-		void setup(VkInstance instance);
-		void cmdBeginLabel(VkCommandBuffer cmdbuffer, std::string caption, glm::vec4 color);
-		void cmdEndLabel(VkCommandBuffer cmdbuffer);
-	}
-}
+    // Wrapper for the VK_EXT_debug_utils extension
+    // These can be used to name Vulkan objects for debugging tools like RenderDoc
+    namespace debugutils
+    {
+        void setup(VkInstance instance);
+        void cmdBeginLabel(VkCommandBuffer cmdbuffer, std::string caption, glm::vec4 color);
+        void cmdEndLabel(VkCommandBuffer cmdbuffer);
+    } // end namespace debugUtils
+} // end namespace vks
